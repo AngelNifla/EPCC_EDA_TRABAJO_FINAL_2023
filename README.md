@@ -19,7 +19,7 @@ Breve descripción del propósito y alcance del proyecto.
 
 ## Estructura del Proyecto
 - `data_preparation.py`: Prepara los datos desde `covid_DB.xlsx`.
-- `kdtree_3d_visualization.py`: Implementa el árbol KD y la visualización 3D.
+- `Kdtree.py`: Implementa el árbol KD y la visualización 3D.
 - `FetchedData.csv`: Archivo CSV con datos seleccionados.
 - `PSA3Def.csv`: Archivo CSV con componentes principales.
 - `PSADef.csv`: Archivo CSV con componentes principales y etiquetas.
