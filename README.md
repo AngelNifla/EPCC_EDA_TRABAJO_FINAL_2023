@@ -8,8 +8,8 @@ Breve descripción del propósito y alcance del proyecto.
 
 ## Instrucciones de Uso
 1. **Lectura de Datos:**
-   - Asegúrate de tener el archivo `covid_DB.xlsx` en la misma carpeta.
-   - Ejecuta el script `data_preparation.py` para preparar los datos.
+   - Asegúrate de tener el archivo `covid_DB.xlsx` en la carpeta `Files`.
+   - Ejecuta el script `DataProcessing.py` para preparar los datos.
 
 2. **Árbol KD y Visualización 3D:**
    - Ejecuta el script `Kdtree.py` para construir y visualizar el árbol KD.
@@ -18,7 +18,7 @@ Breve descripción del propósito y alcance del proyecto.
    - Asegúrate de tener las bibliotecas necesarias instaladas. Puedes instalarlas con `pip install -r requirements.txt`.
 
 ## Estructura del Proyecto
-- `data_preparation.py`: Prepara los datos desde `covid_DB.xlsx`.
+- `DataProcessing.py`: Prepara los datos desde `covid_DB.xlsx`.
 - `Kdtree.py`: Implementa el árbol KD y la visualización 3D.
 - `FetchedData.csv`: Archivo CSV con datos seleccionados.
 - `PSA3Def.csv`: Archivo CSV con componentes principales.
@@ -27,3 +27,12 @@ Breve descripción del propósito y alcance del proyecto.
 ## Requisitos del Sistema y Dependencias
 - Python 3.x
 - Bibliotecas: pandas, scikit-learn, matplotlib
+
+## Contribuidores
+Este proyecto fue implementado por un equipo de 5 estudiantes. Agradecemos sus contribuciones y esfuerzos en el desarrollo y mejora continua del proyecto:
+
+- **Katherine Nikole Béjar Román**
+- **Sennayda Rimache Choquehuanca**
+- **Nombre del Estudiante 3**
+- **Nombre del Estudiante 4**
+- **Nombre del Estudiante 5**
