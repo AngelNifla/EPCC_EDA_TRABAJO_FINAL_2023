@@ -29,7 +29,7 @@ Breve descripción del propósito y alcance del proyecto.
 - Bibliotecas: pandas, scikit-learn, matplotlib
 
 ## Contribuidores
-Este proyecto fue implementado por un equipo de 5 estudiantes. Agradecemos sus contribuciones y esfuerzos en el desarrollo y mejora continua del proyecto:
+Este proyecto fue implementado por un equipo de 5 estudiantes EPCC UNSA.
 
 - **Katherine Nikole Béjar Román**
 - **Sennayda Rimache Choquehuanca**
