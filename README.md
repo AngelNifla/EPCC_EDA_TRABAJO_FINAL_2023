@@ -33,6 +33,7 @@ Este proyecto fue implementado por un equipo de 5 estudiantes EPCC UNSA.
 
 - **Katherine Nikole Béjar Román**
 - **Sennayda Rimache Choquehuanca**
-- **Nombre del Estudiante 3**
-- **Nombre del Estudiante 4**
-- **Nombre del Estudiante 5**
+- **Manuel Angel Nifla Llallacachi**
+- **Leonardo Montoya Choque**
+- **Antony Aroni Jarata**
+
