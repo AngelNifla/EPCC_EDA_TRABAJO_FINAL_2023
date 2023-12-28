@@ -1,0 +1,200 @@
+import csv
+import heapq
+import matplotlib.pyplot as plt
+
+class Nodo:
+    def __init__(self, punto, izquierda=None, derecha=None):
+        self.punto = punto
+        self.izquierda = izquierda
+        self.derecha = derecha
+
+class ArbolKD:
+    def __init__(self, puntos=None, profundidad=0):
+        # Constructor de la clase ArbolKD
+        # Inicializa el árbol con la raíz construida a partir de los puntos dados
+        self.raiz = self.construir(puntos, profundidad)
+
+    def construir(self, puntos, profundidad):
+        # Método recursivo para construir el árbol KD a partir de una lista de puntos
+        if not puntos:
+            # Si la lista de puntos está vacía, retorna None
+            return None
+
+        k = len(puntos[0])
+        eje = profundidad % k
+        puntos.sort(key=lambda x: x[eje])
+        mediana = len(puntos) // 2
+
+        # Crea un nodo con el punto en la posición de la mediana
+        # y recursivamente construye los subárboles izquierdo y derecho
+        return Nodo(
+            punto=puntos[mediana],
+            izquierda=self.construir(puntos[:mediana], profundidad + 1),
+            derecha=self.construir(puntos[mediana + 1:], profundidad + 1)
+        )
+
+    def insertar(self, punto):
+        # Inserta un punto en el árbol KD
+        self.raiz = self._insertar(self.raiz, punto, profundidad=0)
+
+    def _insertar(self, nodo, punto, profundidad):
+        # Método auxiliar recursivo para la inserción de un punto en el árbol
+        if nodo is None:
+            # Si el nodo actual es None, crea un nuevo nodo con el punto
+            return Nodo(punto)
+
+        k = len(punto)
+        eje = profundidad % k
+
+        if punto[eje] < nodo.punto[eje]:
+            # Si el valor en el eje actual del punto es menor, recursivamente inserta en el subárbol izquierdo
+            nodo.izquierda = self._insertar(nodo.izquierda, punto, profundidad + 1)
+        else:
+            # Si es mayor o igual, recursivamente inserta en el subárbol derecho
+            nodo.derecha = self._insertar(nodo.derecha, punto, profundidad + 1)
+
+        return nodo
+
+    def eliminar(self, punto):
+        # Elimina un punto del árbol KD
+        self.raiz = self._eliminar(self.raiz, punto, profundidad=0)
+
+    def _eliminar(self, nodo, punto, profundidad):
+        # Método auxiliar recursivo para la eliminación de un punto en el árbol
+        if nodo is None:
+            # Si el nodo actual es None, no hay nada que eliminar
+            return None
+
+        k = len(punto)
+        eje = profundidad % k
+
+        if punto[eje] < nodo.punto[eje]:
+            # Si el valor en el eje actual del punto es menor, recursivamente elimina en el subárbol izquierdo
+            nodo.izquierda = self._eliminar(nodo.izquierda, punto, profundidad + 1)
+        elif punto[eje] > nodo.punto[eje]:
+            # Si es mayor, recursivamente elimina en el subárbol derecho
+            nodo.derecha = self._eliminar(nodo.derecha, punto, profundidad + 1)
+        else:
+            # Si el punto es igual al punto en el nodo actual, se ha encontrado el punto a eliminar
+            if nodo.derecha is None:
+                # Si no hay subárbol derecho, simplemente retorna el subárbol izquierdo
+                return nodo.izquierda
+            elif nodo.izquierda is None:
+                # Si no hay subárbol izquierdo, retorna el subárbol derecho
+                return nodo.derecha
+
+            # Encuentra el sucesor del nodo actual en el subárbol derecho
+            sucesor = self.encontrar_min(nodo.derecha, profundidad + 1, eje)
+            if sucesor is not None:
+                # Actualiza el punto del nodo actual con el punto del sucesor
+                nodo.punto = sucesor.punto
+                # Elimina el sucesor del subárbol derecho
+                nodo.derecha = self._eliminar(nodo.derecha, sucesor.punto, profundidad + 1)
+
+        return nodo
+
+    def actualizar(self, viejo_punto, nuevo_punto):
+        # Actualiza un punto en el árbol KD
+        # Primero, elimina el punto antiguo y luego inserta el nuevo
+        self.eliminar(viejo_punto)
+        self.insertar(nuevo_punto)
+
+    def encontrar_min(self, nodo, profundidad, eje):
+        # Encuentra el punto mínimo en el subárbol dado en el eje específico
+        if nodo is None:
+            return None
+
+        siguiente_eje = (profundidad) % len(nodo.punto)
+        if siguiente_eje == eje:
+            # Si el siguiente eje es el eje buscado, busca en el subárbol izquierdo
+            if nodo.izquierda is None:
+                return nodo
+            return self.encontrar_min(nodo.izquierda, profundidad + 1, eje)
+        else:
+            # Si el siguiente eje no es el buscado, busca en ambos subárboles izquierdo y derecho
+            min_izquierda = self.encontrar_min(nodo.izquierda, profundidad + 1, eje)
+            min_derecha = self.encontrar_min(nodo.derecha, profundidad + 1, eje)
+
+            # Compara los puntos mínimos encontrados y retorna el mínimo
+            if min_izquierda is None:
+                return min_derecha
+            elif min_derecha is None:
+                return min_izquierda
+            return min(min_izquierda, min_derecha, key=lambda x: x.punto[eje])
+
+    def reequilibrar(self):
+        # Reequilibra el árbol KD
+        # Realiza un recorrido inorden del árbol y luego reconstruye el árbol con los puntos obtenidos
+        puntos = self.recorrido_inorden(self.raiz)
+        self.raiz = self.construir(puntos, profundidad=0)
+
+    def recorrido_inorden(self, nodo):
+        # Realiza un recorrido inorden del árbol KD y retorna una lista de puntos
+        if nodo is None:
+            return []
+        return self.recorrido_inorden(nodo.izquierda) + [nodo.punto] + self.recorrido_inorden(nodo.derecha)
+
+def leer_puntos_desde_csv(ruta_archivo):
+    # Lee puntos desde un archivo CSV y retorna una lista de tuplas
+    with open(ruta_archivo, 'r') as archivo:
+        lector = csv.reader(archivo)
+        puntos = [tuple(map(float, fila)) for fila in lector if all(celda.replace('.', '', 1).isdigit() or (celda[0] == '-' and celda[1:].replace('.', '', 1).isdigit()) for celda in fila)]
+    return puntos
+
+if __name__ == "__main__":
+    # Configuración inicial y ejecución del programa
+    ruta_archivo_csv = 'PSA3Def.csv'
+
+    # Lee los puntos desde el archivo CSV
+    puntos_desde_csv = leer_puntos_desde_csv(ruta_archivo_csv)
+
+    # Construye el árbol KD con los puntos
+    arbol_kd_csv = ArbolKD(puntos_desde_csv)
+
+    # Configuración y creación de la figura y el eje 3D para la visualización
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    def plotear_puntos_3d(ax, puntos, color='b', marcador='o', etiqueta=None):
+        # Grafica puntos en 3D
+        xs, ys, zs = zip(*puntos)
+        ax.scatter(xs, ys, zs, color=color, marker=marcador, label=etiqueta)
+
+    def plotear_arbol_kd_3d(ax, nodo, profundidad, xmin, xmax, ymin, ymax, zmin, zmax):
+        # Grafica el árbol KD en 3D
+        if nodo is not None:
+            k = len(nodo.punto)
+            eje = profundidad % k
+
+            if eje == 0:
+                # Si el eje actual es X, grafica una línea vertical y continua con los subárboles izquierdo y derecho
+                ax.plot([nodo.punto[0], nodo.punto[0]], [ymin, ymax], [zmin, zmax], 'k-', linewidth=1)
+                plotear_arbol_kd_3d(ax, nodo.izquierda, profundidad + 1, xmin, nodo.punto[0], ymin, ymax, zmin, zmax)
+                plotear_arbol_kd_3d(ax, nodo.derecha, profundidad + 1, nodo.punto[0], xmax, ymin, ymax, zmin, zmax)
+            elif eje == 1:
+                # Si el eje actual es Y, grafica una línea horizontal y continua con los subárboles izquierdo y derecho
+                ax.plot([xmin, xmax], [nodo.punto[1], nodo.punto[1]], [zmin, zmax], 'k-', linewidth=1)
+                plotear_arbol_kd_3d(ax, nodo.izquierda, profundidad + 1, xmin, xmax, ymin, nodo.punto[1], zmin, zmax)
+                plotear_arbol_kd_3d(ax, nodo.derecha, profundidad + 1, xmin, xmax, nodo.punto[1], ymax, zmin, zmax)
+            else:
+                # Si el eje actual es Z, grafica una línea en el eje Z y continua con los subárboles izquierdo y derecho
+                ax.plot([xmin, xmax], [ymin, ymax], [nodo.punto[2], nodo.punto[2]], 'k-', linewidth=1)
+                plotear_arbol_kd_3d(ax, nodo.izquierda, profundidad + 1, xmin, xmax, ymin, ymax, zmin, nodo.punto[2])
+                plotear_arbol_kd_3d(ax, nodo.derecha, profundidad + 1, xmin, xmax, ymin, ymax, nodo.punto[2], zmax)
+
+    # Grafica los puntos desde el archivo CSV
+    plotear_puntos_3d(ax, puntos_desde_csv, color='b', marcador='o', etiqueta='Puntos ')
+
+    # Grafica el árbol KD
+    plotear_arbol_kd_3d(ax, arbol_kd_csv.raiz, profundidad=0,
+                   xmin=min(p[0] for p in puntos_desde_csv), xmax=max(p[0] for p in puntos_desde_csv),
+                   ymin=min(p[1] for p in puntos_desde_csv), ymax=max(p[1] for p in puntos_desde_csv),
+                   zmin=min(p[2] for p in puntos_desde_csv), zmax=max(p[2] for p in puntos_desde_csv))
+
+    # Configuración de etiquetas de ejes y leyenda
+    ax.set_xlabel('Hematocrito (x)')
+    ax.set_ylabel('Plaquetas (y)')
+    ax.set_zlabel('Eosinófilos (z)')
+
+    ax.legend()
+    plt.show()
